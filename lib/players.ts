@@ -63,11 +63,6 @@ export async function getPlayerByEmail(email: string): Promise<number | null> {
     // Optional: log to console for dev
     console.error("Player insert failed:", err);
 
-    let message = "Unknown error";
-    if (err instanceof Error && err.message?.includes("UNIQUE constraint failed")) {
-      message = "email already exists";
-    }
-
     return null; // Error occurred
   }
 }
@@ -116,7 +111,7 @@ export async function getSessionsForPlayer(playerId: number): Promise<Session[] 
 
     return sessions;
 
-  } catch (err: any) {
+  } catch (err: unknown) {
     // Optional: log to console for dev
     console.error("Session fetch failed:", err);
     return null; // Error occurred

@@ -1,9 +1,9 @@
 // import Link from 'next/link';
 
-type LandingButtonProps = {
-  children: React.ReactNode;  // use react.reactnode so we can pass in anything
-  href: string;
-};
+// type LandingButtonProps = {
+//   children: React.ReactNode;  // use react.reactnode so we can pass in anything
+//   href: string;
+// };
 
 export default function Home() {
   return (

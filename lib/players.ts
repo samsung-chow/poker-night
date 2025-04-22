@@ -10,6 +10,12 @@ export type Session = {
   gameid: number;
   profitloss: number;
 };
+export type PlayerInfo = {
+  playerId: number;
+  name: string;
+  email: string;
+  joinDate: string;
+}
 
 // creates a new player
 export async function createPlayer(
@@ -21,11 +27,11 @@ export async function createPlayer(
       args: [name, email, date],
     });
     return { success: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Player insert failed:", err);
 
     let message = "Unknown error";
-    if (err.message?.includes("UNIQUE constraint failed")) {
+    if (err instanceof Error && err.message.includes("UNIQUE constraint failed")) {
       message = "email already exists";
     }
 
@@ -53,12 +59,12 @@ export async function getPlayerByEmail(email: string): Promise<number | null> {
     const row = result.rows[0];
     console.log("Row:", row);
     return row.playerid as number;
-  } catch (err: any) {
+  } catch (err: unknown) {
     // Optional: log to console for dev
     console.error("Player insert failed:", err);
 
     let message = "Unknown error";
-    if (err.message?.includes("UNIQUE constraint failed")) {
+    if (err instanceof Error && err.message?.includes("UNIQUE constraint failed")) {
       message = "email already exists";
     }
 
@@ -67,7 +73,7 @@ export async function getPlayerByEmail(email: string): Promise<number | null> {
 }
 
 // function that returns player information 
-export async function getPlayerInfo(playerId: number): Promise<any | null> {
+export async function getPlayerInfo(playerId: number): Promise<PlayerInfo | null> {
   try {
     const res = await turso.execute({
       sql: `SELECT * FROM Players WHERE playerid = ?`,
@@ -80,26 +86,36 @@ export async function getPlayerInfo(playerId: number): Promise<any | null> {
     const row = res.rows[0];
     console.log("Row:", row);
     return {
-      playerId: row.playerid,
-      name: row.name,
-      email: row.email,
-      joinDate: row.joindate
+      playerId: row.playerid as number,
+      name: row.name as string,
+      email: row.email as string,
+      joinDate: row.joindate as string,
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Player fetch failed:", err);
     return null; // Error occurred
   }
 }
 
 // get player session stats
-export async function getSessionsForPlayer(playerId: number): Promise<any[] | null> {
+export async function getSessionsForPlayer(playerId: number): Promise<Session[] | null> {
   try {
     const result = await turso.execute({
       sql: "SELECT * FROM Sessions WHERE playerid = ?",
       args: [playerId],
     });
     console.log("Result:", result);
-    return result.rows;
+
+    // Cast each row individually to match the Session type
+    const sessions = result.rows.map(row => ({
+      sid: row.sid as number,
+      playerid: row.playerid as number,
+      gameid: row.gameid as number,
+      profitloss: row.profitloss as number,
+    }));
+
+    return sessions;
+
   } catch (err: any) {
     // Optional: log to console for dev
     console.error("Session fetch failed:", err);

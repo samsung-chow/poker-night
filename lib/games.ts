@@ -15,11 +15,11 @@ export async function createGame(
     });
     return { success: true };
   }
-  catch (err: any) {
+  catch (err: unknown) {
     console.error("Game insert failed:", err);
 
     let message = "Unknown error";
-    if (err.message?.includes("UNIQUE constraint failed")) {
+    if (err instanceof Error && err.message?.includes("UNIQUE constraint failed")) {
       message = "Game already exists";
     }
     return {
@@ -40,11 +40,11 @@ export async function createGameSession(
     });
     return { success: true };
   }
-  catch (err: any) {
+  catch (err: unknown) {
     console.error("Game session insert failed:", err);
 
     let message = "Unknown error";
-    if (err.message?.includes("UNIQUE constraint failed")) {
+    if (err instanceof Error && err.message?.includes("UNIQUE constraint failed")) {
       message = "Game session already exists";
     }
     return {

@@ -15,12 +15,12 @@ export async function createAdmin(
       args: [adminid, name, password],
     });
     return { success: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
     // Optional: log to console for dev
     console.error("Insert failed:", err);
 
     let message = "Unknown error";
-    if (err.message?.includes("UNIQUE constraint failed")) {
+    if (err instanceof Error && err.message?.includes("UNIQUE constraint failed")) {
       message = "Admin ID already exists";
     }
 

@@ -1,6 +1,6 @@
 'use client';
 // import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export default function Home() {
   const [players, setPlayers] = useState([
@@ -35,7 +35,7 @@ export default function Home() {
   // update function 
   const updatePlayer = (index: number, field: string, value: string | number) => {
     const updatedPlayers = [...players];
-    updatedPlayers[index] = { ...updatedPlayers[index], [field]: value };
+    updatedPlayers[index] = { ...updatedPlayers[index], [field]: value, };
     setPlayers(updatedPlayers);
   };
   const updatePlayerAndCashout = (index: number, stack: number) => {
@@ -48,8 +48,7 @@ export default function Home() {
 
   // Function to reset all players
   const resetAllPlayers = () => {
-    setPlayers(players.map(player => ({ name: "default", buyIn: 0, email: "", stack: "", cashout: 0})));
-    // <Link href="/"></Link>
+    setPlayers(players.map(_ => ({ name: "default", buyIn: 0, email: "", stack: "", cashout: 0})));
   };
 
   // Calculate totals
@@ -67,7 +66,6 @@ export default function Home() {
           buyIn={player.buyIn}
           stack={player.stack}
           cashout={player.cashout}
-          onNameChange={(value) => updatePlayer(index, 'name', value)}
           onBuyInChange={(value) => updatePlayer(index, 'buyIn', value)}
           onStacksizeChange={(value) => updatePlayerAndCashout(index, value)}
         />
@@ -130,22 +128,23 @@ interface PlaceHolderInputsProps {
   buyIn: number;
   stack: string;
   cashout: number;
-  onNameChange: (value: string) => void;
+  // onNameChange: (value: string) => void;
   onBuyInChange: (value: number) => void;
   onStacksizeChange: (value: number) => void;
 }
 
-const PlaceHolderInputs = ({ name, buyIn, cashout, stack, onNameChange, onBuyInChange, onStacksizeChange}: PlaceHolderInputsProps) => {
+const PlaceHolderInputs = ({ name, buyIn, cashout, stack, onBuyInChange, onStacksizeChange}: PlaceHolderInputsProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [inputAmount, setInputAmount] = useState("");
 
-  const handleChanges = () => {
+  const handleChanges = useCallback(() => {
     console.log(`Amount added: ${inputAmount}, New total: ${buyIn + inputAmount}`);
     const parsedAmount = parseFloat(inputAmount) || 0;
     onBuyInChange(buyIn + parsedAmount);
     setInputAmount("");
     setIsModalOpen(false);
-  }
+  }, [buyIn, inputAmount, onBuyInChange]);
+
   const handleStacksizeChange = (stacksize: number) => {
     console.log(`Stacksize updated to ${stacksize}`);
     onStacksizeChange(stacksize);
@@ -227,11 +226,12 @@ interface PlaceHolderTotalsProps {
 const PlaceHolderTotals = ({ onResetClick, totalBuyIns, nightTotal }: PlaceHolderTotalsProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleChanges = () => {
+  const handleChanges = useCallback(() => {
     console.log(`Reset!`);
     onResetClick();
     setIsModalOpen(false);
-  }
+  }, [onResetClick]);
+
   return(
     <>
       <div className="flex flex-row items-center justify-center bg-cyan-500 py-1 gap-x-2">

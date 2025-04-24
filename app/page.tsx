@@ -39,7 +39,7 @@ export default function Home() {
     updatedPlayers[index] = {...updatedPlayers[index], 
       [field]: value,
     };
-    console.log(`Updated ${field} for player ${index}: ${value}`),
+    console.log(`Updated ${field} for player ${index}: ${value}`);
     setPlayers(updatedPlayers);
     const stackValue = isNaN(parseFloat(updatedPlayers[index].stack)) ? 0 : parseFloat(updatedPlayers[index].stack);
     updatedPlayers[index] = {...updatedPlayers[index],
@@ -85,7 +85,7 @@ export default function Home() {
     setAddPlayerModalOpen(false);
     setNumberOfPlayers(numberOfPlayers + 1);
     // console.log(`num of players: ${numberOfPlayers}, player 0 name: ${players[0].name}`);
-  }, [inputName, inputEmail]);
+  }, [inputName, inputEmail, numberOfPlayers, players]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -103,7 +103,7 @@ export default function Home() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown); // cleanup
     };
-  }, [addPlayerModalOpen, inputName, inputEmail]);
+  }, [addPlayerModalOpen, inputName, inputEmail, handleChanges]);
 
   return (
     <>
@@ -265,7 +265,7 @@ const PlaceHolderInputs = ({ name, buyIn, cashout, stack, onBuyInChange, onStack
     return () => {
       window.removeEventListener('keydown', handleKeyDown); // cleanup
     };
-  }, [isModalOpen, inputAmount]);
+  }, [isModalOpen, inputAmount, handleChanges]);
 
   return(
     <>

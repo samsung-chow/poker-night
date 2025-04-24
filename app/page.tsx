@@ -1,21 +1,24 @@
 'use client';
-// import Link from 'next/link';
-import { useState, useEffect, useCallback } from 'react';
+
+import {useState, useEffect, useCallback} from 'react';
 
 export default function Home() {
+  // array that stores player objects
+  // player objects contain all useful information
   const [players, setPlayers] = useState([
-    { name: "default", buyIn: 0, email: "", stack: "", cashout: 0,},
-    { name: "default", buyIn: 0, email: "", stack: "", cashout: 0,},
-    { name: "default", buyIn: 0, email: "", stack: "", cashout: 0,},
-    { name: "default", buyIn: 0, email: "", stack: "", cashout: 0,},
-    { name: "default", buyIn: 0, email: "", stack: "", cashout: 0,},
-    { name: "default", buyIn: 0, email: "", stack: "", cashout: 0,},
-    { name: "default", buyIn: 0, email: "", stack: "", cashout: 0,},
-    { name: "default", buyIn: 0, email: "", stack: "", cashout: 0,},
-    { name: "default", buyIn: 0, email: "", stack: "", cashout: 0,},
-    { name: "default", buyIn: 0, email: "", stack: "", cashout: 0,},
+    {name: ".none", email: "", buyin: 0, stack: "0", cashout: 0,},
+    {name: ".none", email: "", buyin: 0, stack: "0", cashout: 0,},
+    {name: ".none", email: "", buyin: 0, stack: "0", cashout: 0,},
+    {name: ".none", email: "", buyin: 0, stack: "0", cashout: 0,},
+    {name: ".none", email: "", buyin: 0, stack: "0", cashout: 0,},
+    {name: ".none", email: "", buyin: 0, stack: "0", cashout: 0,},
+    {name: ".none", email: "", buyin: 0, stack: "0", cashout: 0,},
+    {name: ".none", email: "", buyin: 0, stack: "0", cashout: 0,},
+    {name: ".none", email: "", buyin: 0, stack: "0", cashout: 0,},
+    {name: ".none", email: "", buyin: 0, stack: "0", cashout: 0,},
   ]);
 
+    // confirmation before refresh
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       // This message might not be displayed in some browsers as they use their own standard message
@@ -23,60 +26,156 @@ export default function Home() {
       e.preventDefault();
       return message; // For modern browsers
     };
-
     window.addEventListener('beforeunload', handleBeforeUnload);
-
     // Clean up the event listener when component unmounts
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [players]); // Re-run if players state changes
 
-  // update function 
+  // update players each time anything is changed
   const updatePlayer = (index: number, field: string, value: string | number) => {
     const updatedPlayers = [...players];
-    updatedPlayers[index] = { ...updatedPlayers[index], [field]: value, };
+    updatedPlayers[index] = {...updatedPlayers[index], 
+      [field]: value,
+    };
+    console.log(`Updated ${field} for player ${index}: ${value}`),
     setPlayers(updatedPlayers);
-  };
-  const updatePlayerAndCashout = (index: number, stack: number) => {
-    const updatedPlayers = [...players];
-    updatedPlayers[index] = { ...updatedPlayers[index], cashout: stack - updatedPlayers[index].buyIn,
-      stack: stack.toString() // Convert stack to string
+    const stackValue = isNaN(parseFloat(updatedPlayers[index].stack)) ? 0 : parseFloat(updatedPlayers[index].stack);
+    updatedPlayers[index] = {...updatedPlayers[index],
+      cashout: stackValue - updatedPlayers[index].buyin,
+      stack: stackValue.toString() // Convert stack to string
     };
     setPlayers(updatedPlayers);
   }
-
-  // Function to reset all players
+  
+  // reset all players
   const resetAllPlayers = () => {
-    setPlayers(players.map(_ => ({ name: "default", buyIn: 0, email: "", stack: "", cashout: 0})));
-  };
+    setPlayers(players.map(_ => ({name: ".none", email: "", buyin: 0, stack: "0", cashout: 0})));
+    setNumberOfPlayers(0);
+    setAddPlayerModalOpen(true);
+  }
 
-  // Calculate totals
-  const totalBuyIns = players.reduce((sum, player) => sum + player.buyIn, 0);
+  // calculating totals
+  const totalBuyins = players.reduce((sum, player) => sum + player.buyin, 0);
   const nightTotal = players.reduce((sum, player) => sum + player.cashout, 0);
 
+  // add player modal
+  const [addPlayerModalOpen, setAddPlayerModalOpen] = useState(true);
+  const [inputName, setInputName] = useState("");
+  const [inputEmail, setInputEmail] = useState("");
+  const [numberOfPlayers, setNumberOfPlayers] = useState(0);
+  
+  const handleChanges = useCallback(() => {
+    // console.log('Adding new player with name:', inputName, 'email:', inputEmail);
+    const newPlayers = [...players];
+    newPlayers[numberOfPlayers] = {
+    name: inputName,
+    email: inputEmail,
+    buyin: 0,
+    stack: "0",
+    cashout: 0
+  };
+  
+    // Set the new array directly
+    setPlayers(newPlayers);
+
+    setInputName("");
+    setInputEmail("");
+    setAddPlayerModalOpen(false);
+    setNumberOfPlayers(numberOfPlayers + 1);
+    // console.log(`num of players: ${numberOfPlayers}, player 0 name: ${players[0].name}`);
+  }, [inputName, inputEmail]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        handleChanges(); // confirm on Enter
+      } else if (e.key === 'Escape') {
+        setAddPlayerModalOpen(false); // cancel on Esc
+      }
+    };
+  
+    if (addPlayerModalOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+  
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown); // cleanup
+    };
+  }, [addPlayerModalOpen, inputName, inputEmail]);
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white">
-      <PlaceHolderTitles />
+    <>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-white">
+        <PlaceHolderTitles />
 
-      {players.map((player, index) => (
-        <PlaceHolderInputs
-          key={index}
-          name={player.name}
-          buyIn={player.buyIn}
-          stack={player.stack}
-          cashout={player.cashout}
-          onBuyInChange={(value) => updatePlayer(index, 'buyIn', value)}
-          onStacksizeChange={(value) => updatePlayerAndCashout(index, value)}
+        {players.map((player, index) => (
+          player.name !== ".none" ? (
+          <PlaceHolderInputs
+            key={index}
+            name={player.name}
+            buyIn={player.buyin}
+            stack={player.stack}
+            cashout={player.cashout}
+            onBuyInChange={(value) => updatePlayer(index, 'buyin', value)}
+            onStacksizeChange={(value) => updatePlayer(index, 'stack', value)}
+          />
+        ) : null
+        ))}
+
+        <PlaceHolderTotals 
+          onResetClick={resetAllPlayers}
+          totalBuyIns={totalBuyins}
+          nightTotal={nightTotal}
         />
-      ))}
 
-      <PlaceHolderTotals 
-        onResetClick={resetAllPlayers}
-        totalBuyIns={totalBuyIns}
-        nightTotal={nightTotal}
-      />
-    </div>
+        {numberOfPlayers < 10 && (
+          <button 
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 transition-colors"
+            onClick={() => setAddPlayerModalOpen(true)}
+          >
+            Add Player
+          </button>
+        )}
+      </div>
+
+      {addPlayerModalOpen && (
+        <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-xl text-black w-80">
+            <h2 className="text-lg font-semibold mb-2">Add new player</h2>
+            <input
+              type="string"
+              className="border w-full px-3 py-2 rounded mb-4"
+              placeholder="Name"
+              onChange={(e) => setInputName(e.target.value)}
+              autoFocus
+            />
+            <input
+              type="string"
+              className="border w-full px-3 py-2 rounded mb-4"
+              placeholder="Email"
+              onChange={(e) => setInputEmail(e.target.value)}
+            />
+            <div className="flex justify-between">
+              <button
+                className="bg-green-600 text-white px-3 py-1 rounded"
+                onClick={handleChanges}
+              >
+                Confirm
+              </button>
+              <button
+                className="bg-gray-400 text-white px-3 py-1 rounded"
+                onClick={() => setAddPlayerModalOpen(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+    </>
   );
 }
 

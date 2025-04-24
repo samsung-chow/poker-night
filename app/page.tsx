@@ -132,7 +132,7 @@ export default function Home() {
 
         {numberOfPlayers < 10 && (
           <button 
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 transition-colors"
+            className="mt-4 px-4 py-2 bg-gray-700 text-white rounded hover:bg-blue-500 transition-colors"
             onClick={() => setAddPlayerModalOpen(true)}
           >
             Add Player
@@ -142,7 +142,7 @@ export default function Home() {
 
       {addPlayerModalOpen && (
         <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-xl text-black w-80">
+          <div className="bg-white p-6 rounded-2xl shadow-xl text-black w-80">
             <h2 className="text-lg font-semibold mb-2">Add new player</h2>
             <input
               type="string"
@@ -205,7 +205,7 @@ const StandardTextBox = ({ onInputChange, stack }: StandardTextBoxProps) => {
     <input
       type="text"
       value={stack ?? ""}
-      className="px-3 py-2 w-20 rounded bg-gray-800 text-white border border-gray-600 text-center"
+      className="px-3 py-2 w-20 rounded bg-gray-700 text-white border border-gray-600 text-center"
       onChange={(e) => {
         const value = parseFloat(e.target.value);
         if (!isNaN(value)) {
@@ -269,7 +269,7 @@ const PlaceHolderInputs = ({ name, buyIn, cashout, stack, onBuyInChange, onStack
 
   return(
     <>
-      <div className="flex flex-row items-center justify-center bg-amber-950 py-1 gap-x-2">
+      <div className="flex flex-row items-center justify-center bg-black py-1 gap-x-2">
         <div className="w-50 text-left px-5">{`${name}`}</div>
         <div className="w-32 text-center">{`$${buyIn}`}</div>
         <div className="w-32 text-center" onClick={() => setIsModalOpen(true)} ><StandardButton /></div>
@@ -286,7 +286,7 @@ const PlaceHolderInputs = ({ name, buyIn, cashout, stack, onBuyInChange, onStack
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-xl text-black w-80">
+          <div className="bg-white p-6 rounded-2xl shadow-xl text-black w-80">
             <h2 className="text-lg font-semibold mb-2">Adjust Buy-In</h2>
             <input
               type="string"
@@ -333,7 +333,7 @@ const PlaceHolderTotals = ({ onResetClick, totalBuyIns, nightTotal }: PlaceHolde
 
   return(
     <>
-      <div className="flex flex-row items-center justify-center bg-cyan-500 py-1 gap-x-2">
+      <div className="flex flex-row items-center justify-center bg-gray-900 py-1 gap-x-2">
         <div className="w-50 text-center"> Totals: </div>
         <div className="w-32 text-center">{`$${totalBuyIns}`}</div>
         <div className="w-32 text-center" onClick={() => setIsModalOpen(true)} > <StandardButton_r /> </div>
@@ -343,7 +343,7 @@ const PlaceHolderTotals = ({ onResetClick, totalBuyIns, nightTotal }: PlaceHolde
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-xl text-black w-80">
+          <div className="bg-white p-6 rounded-2xl shadow-xl text-black w-80">
             <h2 className="text-lg font-semibold mb-2">Confirm Reset?</h2>
             <div className="flex justify-between">
               <button
@@ -369,7 +369,7 @@ const PlaceHolderTotals = ({ onResetClick, totalBuyIns, nightTotal }: PlaceHolde
 
 const PlaceHolderTitles = () => {
   return(
-    <div className="flex flex-row items-center justify-center bg-blue-400 py-1 gap-x-2">
+    <div className="flex flex-row items-center justify-center bg-gray-900 py-1 gap-x-2">
       <div className="w-50 text-center">Name</div>
       <div className="w-32 text-center">BuyIn</div>
       <div className="w-32 text-center">Rebuy</div>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from '@vercel/analytics/next';
 // import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from '@/components/header';
@@ -23,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className="bg-black text-white">
         <Header />
-        <main>{children}</main>
+        <main>{children}<Analytics /></main>
       </body>
     </html>
   );

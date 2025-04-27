@@ -153,7 +153,7 @@ export default function Home() {
             className="mt-4 px-4 py-2 bg-gray-700 text-white rounded hover:bg-blue-500 transition-colors"
             onClick={() => setAddPlayerModalOpen(true)}
           >
-            Add Player
+            Add Player (n)
           </button>
         )}
       </div>

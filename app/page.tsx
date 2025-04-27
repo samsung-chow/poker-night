@@ -6,16 +6,16 @@ export default function Home() {
   // array that stores player objects
   // player objects contain all useful information
   const [players, setPlayers] = useState([
-    {name: ".none", email: "", buyin: 0, stack: "0", cashout: 0,},
-    {name: ".none", email: "", buyin: 0, stack: "0", cashout: 0,},
-    {name: ".none", email: "", buyin: 0, stack: "0", cashout: 0,},
-    {name: ".none", email: "", buyin: 0, stack: "0", cashout: 0,},
-    {name: ".none", email: "", buyin: 0, stack: "0", cashout: 0,},
-    {name: ".none", email: "", buyin: 0, stack: "0", cashout: 0,},
-    {name: ".none", email: "", buyin: 0, stack: "0", cashout: 0,},
-    {name: ".none", email: "", buyin: 0, stack: "0", cashout: 0,},
-    {name: ".none", email: "", buyin: 0, stack: "0", cashout: 0,},
-    {name: ".none", email: "", buyin: 0, stack: "0", cashout: 0,},
+    {name: ".none", email: "", buyin: 0, stack: "", cashout: 0, stackvalue: 0},
+    {name: ".none", email: "", buyin: 0, stack: "", cashout: 0, stackvalue: 0},
+    {name: ".none", email: "", buyin: 0, stack: "", cashout: 0, stackvalue: 0},
+    {name: ".none", email: "", buyin: 0, stack: "", cashout: 0, stackvalue: 0},
+    {name: ".none", email: "", buyin: 0, stack: "", cashout: 0, stackvalue: 0},
+    {name: ".none", email: "", buyin: 0, stack: "", cashout: 0, stackvalue: 0},
+    {name: ".none", email: "", buyin: 0, stack: "", cashout: 0, stackvalue: 0},
+    {name: ".none", email: "", buyin: 0, stack: "", cashout: 0, stackvalue: 0},
+    {name: ".none", email: "", buyin: 0, stack: "", cashout: 0, stackvalue: 0},
+    {name: ".none", email: "", buyin: 0, stack: "", cashout: 0, stackvalue: 0},
   ]);
 
     // confirmation before refresh
@@ -41,17 +41,17 @@ export default function Home() {
     };
     console.log(`Updated ${field} for player ${index}: ${value}`);
     setPlayers(updatedPlayers);
-    const stackValue = isNaN(parseFloat(updatedPlayers[index].stack)) ? 0 : parseFloat(updatedPlayers[index].stack);
+    const tmp = isNaN(parseFloat(updatedPlayers[index].stack)) ? 0 : parseFloat(updatedPlayers[index].stack);
     updatedPlayers[index] = {...updatedPlayers[index],
-      cashout: stackValue - updatedPlayers[index].buyin,
-      stack: stackValue.toString() // Convert stack to string
+      cashout: Number((tmp - updatedPlayers[index].buyin).toFixed(2)),
+      stackvalue: tmp // Convert stack to string
     };
     setPlayers(updatedPlayers);
   }
   
   // reset all players
   const resetAllPlayers = () => {
-    setPlayers(players.map(_ => ({name: ".none", email: "", buyin: 0, stack: "0", cashout: 0})));
+    setPlayers(players.map(_ => ({name: ".none", email: "", buyin: 0, stack: "", cashout: 0, stackvalue: 0})));
     setNumberOfPlayers(0);
     setAddPlayerModalOpen(true);
   }
@@ -73,8 +73,9 @@ export default function Home() {
     name: inputName,
     email: inputEmail,
     buyin: 0,
-    stack: "0",
-    cashout: 0
+    stack: "",
+    cashout: 0,
+    stackvalue: 0, 
   };
   
     // Set the new array directly
@@ -97,6 +98,23 @@ export default function Home() {
     };
   
     if (addPlayerModalOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+  
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown); // cleanup
+    };
+  }, [addPlayerModalOpen, inputName, inputEmail, handleChanges]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'n') {
+        e.preventDefault();
+        setAddPlayerModalOpen(true); // add player on 'n'
+      }
+    };
+  
+    if (!addPlayerModalOpen) {
       window.addEventListener('keydown', handleKeyDown);
     }
   
@@ -196,7 +214,7 @@ const StandardButton_r = () => {
 }
 
 interface StandardTextBoxProps {
-  onInputChange: (value: number) => void;
+  onInputChange: (value: string) => void;
   stack: string;
 }
 
@@ -204,19 +222,10 @@ const StandardTextBox = ({ onInputChange, stack }: StandardTextBoxProps) => {
   return (
     <input
       type="text"
-      value={stack ?? ""}
+      value={stack}
       className="px-3 py-2 w-20 rounded bg-gray-700 text-white border border-gray-600 text-center"
       onChange={(e) => {
-        const value = parseFloat(e.target.value);
-        if (!isNaN(value)) {
-          // Handle valid number input
-          console.log(`Cashout updated: ${value}`);
-          onInputChange(value);
-        } else {
-          // Handle invalid input
-          console.log("Invalid cashout value");
-          onInputChange(0); // Reset to 0 or handle as needed
-        }
+        onInputChange(e.target.value);
       }} 
     />
   );
@@ -229,7 +238,7 @@ interface PlaceHolderInputsProps {
   cashout: number;
   // onNameChange: (value: string) => void;
   onBuyInChange: (value: number) => void;
-  onStacksizeChange: (value: number) => void;
+  onStacksizeChange: (value: string) => void;
 }
 
 const PlaceHolderInputs = ({ name, buyIn, cashout, stack, onBuyInChange, onStacksizeChange}: PlaceHolderInputsProps) => {
@@ -244,9 +253,9 @@ const PlaceHolderInputs = ({ name, buyIn, cashout, stack, onBuyInChange, onStack
     setIsModalOpen(false);
   }, [buyIn, inputAmount, onBuyInChange]);
 
-  const handleStacksizeChange = (stacksize: number) => {
-    console.log(`Stacksize updated to ${stacksize}`);
-    onStacksizeChange(stacksize);
+  const handleStacksizeChange = (stack: string) => {
+    console.log(`Stacksize updated to ${stack}`);
+    onStacksizeChange(stack);
   }
 
   useEffect(() => {

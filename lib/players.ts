@@ -199,5 +199,7 @@ export async function getPlayerStats(playerId: number) {
   return calculateStatsFromSessions(sessions);
 }
 
+getPlayerStats(4);
+
 
 

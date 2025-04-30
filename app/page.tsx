@@ -268,7 +268,7 @@ export default function Home() {
       }
 
     } else {
-      setAddToDbModalOpen(false);
+      setCreatePlayerModalOpen(false);
       console.log('admin credentials are incorrect');
       alert("invalid adminid or password");
     }

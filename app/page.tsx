@@ -379,12 +379,16 @@ export default function Home() {
               placeholder="Name"
               onChange={(e) => setInputName(e.target.value)}
               autoFocus
+              autoCorrect='off'
+              autoCapitalize='none'
             />
             <input
               type="string"
               className="border w-full px-3 py-2 rounded mb-4"
               placeholder="Email"
               onChange={(e) => setInputEmail(e.target.value)}
+              autoCorrect='off'
+              autoCapitalize='none'
             />
             <div className="flex justify-between">
               <button
@@ -415,6 +419,8 @@ export default function Home() {
               onChange={(e) => setInputAdminid(e.target.value)}
               autoFocus
               autoComplete='off'
+              autoCorrect='off'
+              autoCapitalize='none'
             />
             <input
               type="password"
@@ -422,12 +428,16 @@ export default function Home() {
               placeholder="password"
               onChange={(e) => setInputPassword(e.target.value)}
               autoComplete='off'
+              autoCorrect='off'
+              autoCapitalize='none'
             />
             <input
               type="string"
               className="border w-full px-3 py-2 rounded mb-4"
               placeholder="buyin"
               onChange={(e) => setInputBuyin(e.target.value)}
+              autoCorrect='off'
+              autoCapitalize='none'
             />
             <div className="flex justify-between">
               <button
@@ -457,6 +467,8 @@ export default function Home() {
               placeholder="name"
               onChange={(e) => setInputName(e.target.value)}
               autoFocus
+              autoCorrect='off'
+              autoCapitalize='none'
             />
             <input
               type="string"
@@ -464,18 +476,24 @@ export default function Home() {
               placeholder="email"
               onChange={(e) => setInputEmail(e.target.value)}
               autoComplete='off'
+              autoCorrect='off'
+              autoCapitalize='none'
             />
             <input
               type="string"
               className="border w-full px-3 py-2 rounded mb-4"
               placeholder="adminid"
               onChange={(e) => setInputAdminid(e.target.value)}
+              autoCorrect='off'
+              autoCapitalize='none'
             />
             <input
               type="password"
               className="border w-full px-3 py-2 rounded mb-4"
               placeholder="password"
               onChange={(e) => setInputPassword(e.target.value)}
+              autoCorrect='off'
+              autoCapitalize='none'
             />
             <div className="flex justify-between">
               <button
@@ -530,6 +548,8 @@ const StandardTextBox = ({ onInputChange, stack }: StandardTextBoxProps) => {
       onChange={(e) => {
         onInputChange(e.target.value);
       }} 
+      autoCorrect='off'
+              autoCapitalize='none'
     />
   );
 }
@@ -606,6 +626,8 @@ const PlaceHolderInputs = ({ name, buyIn, cashout, stack, onBuyInChange, onStack
               value={inputAmount}
               onChange={(e) => setInputAmount(e.target.value)}
               autoFocus
+              autoCorrect='off'
+              autoCapitalize='none'
             />
             <div className="flex justify-between">
               <button

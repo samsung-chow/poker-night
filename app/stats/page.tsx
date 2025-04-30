@@ -113,6 +113,8 @@ export default function Home() {
               placeholder="email"
               onChange={(e) => setInputEmail(e.target.value)}
               autoFocus
+              autoCorrect='off'
+              autoCapitalize='none'
             />
             <div className="flex justify-between">
               <button

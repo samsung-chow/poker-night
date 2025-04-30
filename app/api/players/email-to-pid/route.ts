@@ -14,7 +14,7 @@ export async function GET(req: Request) {
 
   try {
     const result = await turso.execute({
-      sql: 'SELECT playerid FROM Players WHERE email = ?',
+      sql: 'SELECT playerid, name FROM Players WHERE email = ?',
       args: [email],
     });
 
@@ -24,7 +24,8 @@ export async function GET(req: Request) {
 
     const row = result.rows[0];
     console.log('playerid:', row.playerid);
-    return NextResponse.json({ success: true, playerid: row.playerid });
+    console.log('name:', row.name);
+    return NextResponse.json({ success: true, playerid: row.playerid, name: row.name });
 
   } catch (err: unknown) {
     console.error('Player lookup failed:', err);

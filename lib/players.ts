@@ -42,6 +42,21 @@ export async function createPlayer(
   }
 }
 
+// // check if player exists in database
+// export async function playerExists(email: string): Promise<boolean> {
+//   try {
+//     const result = await turso.execute({
+//       sql: `SELECT COUNT(*) as count FROM Players WHERE email = ?`,
+//       args: [email],
+//     });
+//     const count = result.rows[0].count as number;
+//     return count > 0;
+//   } catch (err: unknown) {
+//     console.error("Player existence check failed:", err);
+//     return false; // Error occurred
+//   }
+// }
+
 // function that returns playerid by email 
 export async function getPlayerByEmail(email: string): Promise<number | null> {
   try {

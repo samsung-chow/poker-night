@@ -62,66 +62,258 @@ export default function Home() {
 
   // add player modal
   const [addPlayerModalOpen, setAddPlayerModalOpen] = useState(true);
+  const [addToDbModalOpen, setAddToDbModalOpen] = useState(false);
+  const [createPlayerModalOpen, setCreatePlayerModalOpen] = useState(false);
   const [inputName, setInputName] = useState("");
   const [inputEmail, setInputEmail] = useState("");
   const [numberOfPlayers, setNumberOfPlayers] = useState(0);
+  const [inputAdminid, setInputAdminid] = useState("");
+  const [inputPassword, setInputPassword] = useState("");
+  const [inputBuyin, setInputBuyin] = useState("");
   
-  const handleChanges = useCallback(() => {
-    // console.log('Adding new player with name:', inputName, 'email:', inputEmail);
-    const newPlayers = [...players];
-    newPlayers[numberOfPlayers] = {
-    name: inputName,
-    email: inputEmail,
-    buyin: 0,
-    stack: "",
-    cashout: 0,
-    stackvalue: 0, 
-  };
-  
-    // Set the new array directly
-    setPlayers(newPlayers);
+  const handleChangesAddPlayer = useCallback(async () => {
+    if (inputEmail) {
+      const res = await fetch(`/api/players/exists?email=${encodeURIComponent(inputEmail)}`);
+      const data = await res.json();
+      const emailExists = data.exists;
 
-    setInputName("");
+      if (emailExists) {
+        // console.log('Adding new player with name:', inputName, 'email:', inputEmail);
+        const newPlayers = [...players];
+        newPlayers[numberOfPlayers] = {
+        name: inputName,
+        email: inputEmail,
+        buyin: 0,
+        stack: "",
+        cashout: 0,
+        stackvalue: 0, 
+      };
+      
+        // Set the new array directly
+        setPlayers(newPlayers);
+
+        setInputName("");
+        setInputEmail("");
+        setAddPlayerModalOpen(false);
+        setNumberOfPlayers(numberOfPlayers + 1);
+        // console.log(`num of players: ${numberOfPlayers}, player 0 name: ${players[0].name}`);
+        
+      } else {
+        console.log("Please enter a valid email address.");
+        alert("Please enter a valid email address.");
+      }
+    } 
+
     setInputEmail("");
-    setAddPlayerModalOpen(false);
-    setNumberOfPlayers(numberOfPlayers + 1);
-    // console.log(`num of players: ${numberOfPlayers}, player 0 name: ${players[0].name}`);
+
   }, [inputName, inputEmail, numberOfPlayers, players]);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Enter') {
-        handleChanges(); // confirm on Enter
-      } else if (e.key === 'Escape') {
-        setAddPlayerModalOpen(false); // cancel on Esc
+  const handleChangesAddToDb = useCallback(async () => {
+    const res = await fetch('/api/admins', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        adminid: inputAdminid,
+        password: inputPassword,
+      }),
+    });
+    const data = await res.json();
+    const adminExists = data.exists;
+
+    if (adminExists) {
+      setAddToDbModalOpen(false);
+      console.log('admin verified');
+
+      // create game
+      const res = await fetch('/api/games', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          buyin: inputBuyin,
+          hostid: inputAdminid,
+        }),
+      });
+      const data = await res.json();
+      const gameAdded = data.success;
+      const gameid = data.gameid;
+      if (gameAdded) {
+        // write to logs
+        await fetch('/api/admins/logs', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            adminid: inputAdminid,
+            description: `Admin ${inputAdminid} created new game with buyin ${inputBuyin}`,
+          }),
+        });
+        console.log('Game added successfully');
+      } else {
+        console.log('Failed to add game');
+        alert("Failed to add game");
       }
-    };
-  
-    if (addPlayerModalOpen) {
-      window.addEventListener('keydown', handleKeyDown);
+
+      // add sessions then close modal
+      for (const player of players){
+        if (player.email.trim() !== ''){
+          const res1 = await fetch(`/api/players/email-to-pid?email=${encodeURIComponent(player.email)}`);
+          const data = await res1.json();
+
+          if (!data.success) {
+            console.log(`Player ${player.email} not found`);
+            alert(`Player ${player.email} not found`);
+            continue;
+          }
+
+          const playerid = data.playerid;
+
+          // create game session
+          const res2 = await fetch('/api/games/sessions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              playerid: playerid,
+              gameid: gameid,
+              profitloss: player.cashout,
+            }),
+          });
+
+          const data2 = await res2.json();
+          const sessionAdded = data2.success;
+          if (sessionAdded) {
+            // write to logs
+            await fetch('/api/admins/logs', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                adminid: inputAdminid,
+                description: `Admin ${inputAdminid} added session for player ${player.name} with profit/loss ${player.cashout}`,
+              }),
+            });
+            console.log('Session added successfully');
+          } else {
+            console.log('Failed to add session');
+            alert(`failed to add session for player ${player.name}`);
+          }
+        }
+      }
+
+    } else {
+      console.log('admin credentials are incorrect');
+      alert("invalid adminid or password");
     }
-  
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown); // cleanup
-    };
-  }, [addPlayerModalOpen, inputName, inputEmail, handleChanges]);
+
+    setInputAdminid("");
+    setInputPassword("");
+
+  }, [inputAdminid, inputPassword, inputBuyin]);
+
+  const handleCreatePlayer = useCallback(async () => {
+    const res = await fetch('/api/admins', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        adminid: inputAdminid,
+        password: inputPassword,
+      }),
+    });
+    const data = await res.json();
+    const adminExists = data.exists;
+
+    if (adminExists) {
+      setCreatePlayerModalOpen(false);
+      console.log('admin verified');
+      const res = await fetch('/api/players/exists', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: inputName,
+          email: inputEmail,
+        }),
+      })
+      const data = await res.json();
+      const playerAdded = data.success;
+
+      if (playerAdded) {
+        // write to logs
+        await fetch('/api/admins/logs', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            adminid: inputAdminid,
+            description: `Admin ${inputAdminid} created new player ${inputName} with email ${inputEmail}`,
+          }),
+        });
+        console.log('Player added successfully');
+        alert(`Player ${inputName} added successfully, welcome!`);
+      } else {
+        console.log('Failed to add player');
+        alert("Failed to add player");
+      }
+
+    } else {
+      console.log('admin credentials are incorrect');
+      alert("invalid adminid or password");
+    }
+
+    setInputAdminid("");
+    setInputPassword("");
+
+  }, [inputAdminid, inputPassword, inputName, inputEmail]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'n') {
+      const isAnyModalOpen = addPlayerModalOpen || addToDbModalOpen || createPlayerModalOpen;
+  
+      // 'Enter' confirms (only if one modal is open)
+      if (e.key === 'Enter') {
+        if (addPlayerModalOpen) handleChangesAddPlayer();
+        if (addToDbModalOpen) handleChangesAddToDb(); 
+        if (createPlayerModalOpen) handleCreatePlayer();
+      }
+  
+      // 'Escape' closes whichever modal is open
+      else if (e.key === 'Escape') {
+        if (addPlayerModalOpen) setAddPlayerModalOpen(false);
+        if (addToDbModalOpen) setAddToDbModalOpen(false);
+        if (createPlayerModalOpen) setCreatePlayerModalOpen(false);
+      }
+  
+      // 'n' opens add player modal if none are open
+      else if (e.key === 'n' && !isAnyModalOpen) {
         e.preventDefault();
-        setAddPlayerModalOpen(true); // add player on 'n'
+        setAddPlayerModalOpen(true);
       }
     };
   
-    if (!addPlayerModalOpen) {
-      window.addEventListener('keydown', handleKeyDown);
-    }
-  
+    window.addEventListener('keydown', handleKeyDown);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown); // cleanup
+      window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [addPlayerModalOpen, inputName, inputEmail, handleChanges]);
+  }, [
+    addPlayerModalOpen,
+    addToDbModalOpen,
+    createPlayerModalOpen,
+    handleChangesAddPlayer,
+    handleChangesAddToDb,
+    handleCreatePlayer, 
+  ]);
+  
 
   return (
     <>
@@ -148,14 +340,31 @@ export default function Home() {
           nightTotal={nightTotal}
         />
 
-        {numberOfPlayers < 10 && (
+        <div className='flex flex-row space-x-10'>
+
           <button 
             className="mt-4 px-4 py-2 bg-gray-700 text-white rounded hover:bg-blue-500 transition-colors"
-            onClick={() => setAddPlayerModalOpen(true)}
+            onClick={() => setCreatePlayerModalOpen(true)}
           >
-            Add Player (n)
+            Create Account
           </button>
-        )}
+
+          {numberOfPlayers < 10 && (
+            <button 
+              className="mt-4 px-4 py-2 bg-gray-700 text-white rounded hover:bg-blue-500 transition-colors"
+              onClick={() => setAddPlayerModalOpen(true)}
+            >
+              Add Player (n)
+            </button>
+          )}
+
+          <button 
+            className="mt-4 px-4 py-2 bg-gray-700 text-white rounded hover:bg-blue-500 transition-colors"
+            onClick={() => setAddToDbModalOpen(true)}
+          >
+            Add to DB
+          </button> 
+        </div>
       </div>
 
       {addPlayerModalOpen && (
@@ -178,7 +387,7 @@ export default function Home() {
             <div className="flex justify-between">
               <button
                 className="bg-green-600 text-white px-3 py-1 rounded"
-                onClick={handleChanges}
+                onClick={handleChangesAddPlayer}
               >
                 Confirm
               </button>
@@ -192,6 +401,98 @@ export default function Home() {
           </div>
         </div>
       )}
+      
+      {addToDbModalOpen && (
+        <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-xl text-black w-80">
+            <h2 className="text-lg font-semibold mb-2">Add to database?</h2>
+            <input
+              type="string"
+              className="border w-full px-3 py-2 rounded mb-4"
+              placeholder="adminid"
+              onChange={(e) => setInputAdminid(e.target.value)}
+              autoFocus
+              autoComplete='off'
+            />
+            <input
+              type="password"
+              className="border w-full px-3 py-2 rounded mb-4"
+              placeholder="password"
+              onChange={(e) => setInputPassword(e.target.value)}
+              autoComplete='off'
+            />
+            <input
+              type="string"
+              className="border w-full px-3 py-2 rounded mb-4"
+              placeholder="buyin"
+              onChange={(e) => setInputBuyin(e.target.value)}
+            />
+            <div className="flex justify-between">
+              <button
+                className="bg-green-600 text-white px-3 py-1 rounded"
+                onClick={handleChangesAddToDb}
+              >
+                Confirm
+              </button>
+              <button
+                className="bg-gray-400 text-white px-3 py-1 rounded"
+                onClick={() => setAddToDbModalOpen(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {createPlayerModalOpen && (
+        <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-xl text-black w-80">
+            <h2 className="text-lg font-semibold mb-2">Create new account</h2>
+            <input
+              type="string"
+              className="border w-full px-3 py-2 rounded mb-4"
+              placeholder="name"
+              onChange={(e) => setInputName(e.target.value)}
+              autoFocus
+            />
+            <input
+              type="string"
+              className="border w-full px-3 py-2 rounded mb-4"
+              placeholder="email"
+              onChange={(e) => setInputEmail(e.target.value)}
+              autoComplete='off'
+            />
+            <input
+              type="string"
+              className="border w-full px-3 py-2 rounded mb-4"
+              placeholder="adminid"
+              onChange={(e) => setInputAdminid(e.target.value)}
+            />
+            <input
+              type="password"
+              className="border w-full px-3 py-2 rounded mb-4"
+              placeholder="password"
+              onChange={(e) => setInputPassword(e.target.value)}
+            />
+            <div className="flex justify-between">
+              <button
+                className="bg-green-600 text-white px-3 py-1 rounded"
+                onClick={handleCreatePlayer}
+              >
+                Confirm
+              </button>
+              <button
+                className="bg-gray-400 text-white px-3 py-1 rounded"
+                onClick={() => setCreatePlayerModalOpen(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       
     </>
   );

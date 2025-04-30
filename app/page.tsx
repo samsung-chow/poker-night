@@ -338,8 +338,8 @@ export default function Home() {
 
         <PlaceHolderTotals 
           onResetClick={resetAllPlayers}
-          totalBuyIns={totalBuyins}
-          nightTotal={nightTotal}
+          totalBuyIns={Number(totalBuyins.toFixed(2))}
+          nightTotal={Number(nightTotal.toFixed(2))}
         />
 
         <div className='flex flex-row space-x-10'>
@@ -551,7 +551,7 @@ const PlaceHolderInputs = ({ name, buyIn, cashout, stack, onBuyInChange, onStack
   const handleChanges = useCallback(() => {
     console.log(`Amount added: ${inputAmount}, New total: ${buyIn + inputAmount}`);
     const parsedAmount = parseFloat(inputAmount) || 0;
-    onBuyInChange(buyIn + parsedAmount);
+    onBuyInChange(Number((buyIn + parsedAmount).toFixed(2)));
     setInputAmount("");
     setIsModalOpen(false);
   }, [buyIn, inputAmount, onBuyInChange]);

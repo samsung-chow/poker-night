@@ -26,6 +26,7 @@ export default function Home() {
         const data = await response.json();
 
         if (data.success) {
+            setInputEmail("");
             setPlayerId(data.playerid);
             setPlayerEmail(inputEmail);
             setPlayerName(data.name);
@@ -50,9 +51,6 @@ export default function Home() {
                 } else {
                     alert("Error here: " + playerData.error);
                 }
-
-
-
 
         } else {
             alert("Error: " + data.error);

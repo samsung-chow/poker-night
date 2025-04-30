@@ -209,6 +209,7 @@ export default function Home() {
 
     } else {
       console.log('admin credentials are incorrect');
+      setAddToDbModalOpen(false);
       alert("invalid adminid or password");
     }
 
@@ -267,6 +268,7 @@ export default function Home() {
       }
 
     } else {
+      setAddToDbModalOpen(false);
       console.log('admin credentials are incorrect');
       alert("invalid adminid or password");
     }

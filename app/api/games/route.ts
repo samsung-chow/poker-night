@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { turso } from '@/lib/turso';
 
+// insert a new game into the database, returns the gameid
 export async function POST(req: Request) {
   try {
     const { buyin, hostid } = await req.json();

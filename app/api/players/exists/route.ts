@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import { turso } from '@/lib/turso';
 
+// checks if player exists in the database
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const email = searchParams.get('email');
@@ -26,6 +27,7 @@ export async function GET(req: Request) {
   }
 }
 
+// creates a new player in the database
 export async function POST(req: Request) {
   try {
     const { name, email } = await req.json();

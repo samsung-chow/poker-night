@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { turso } from '@/lib/turso';
 
+// creates game sessions, adds it to database
 export async function POST(req: Request) {
   try {
     const { playerid, gameid, profitloss } = await req.json();

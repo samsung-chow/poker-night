@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { turso } from '@/lib/turso';
 
-// takes email and returns playerid and name
+// find most recent game played given email
+// returns all players who played, p/l, gameid, and date played
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const email = url.searchParams.get('email');

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { turso } from '@/lib/turso';
 
+// returns all sessions for a given player
 export async function POST(req: NextRequest) {
   try {
     const { playerId } = await req.json();

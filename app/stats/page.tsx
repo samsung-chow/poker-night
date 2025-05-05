@@ -80,27 +80,40 @@ export default function Home() {
 
     return(
         <>
-        <div className='p-2'>{`your name is ${playerName}`}</div>
-        <div className='p-2'>{`your email is ${playerEmail}`}</div>
-        <div className='p-2'>{`your player id is ${playerId}`}</div>
-        <div className='p-2'>{`Total Profit: ${Number(playerStats.totalProfit.toFixed(2))}`}</div>
-        <div className='p-2'>{`Average Profit: ${playerStats.avgProfit}`}</div>
-        <div className='p-2'>{`Number of Sessions: ${Number(playerStats.numSessions.toFixed(2))}`}</div>
-        <div className='p-2'>{`Standard Deviation: ${Number(playerStats.stdDev.toFixed(4))}`}</div>
-        <div className='p-2'>{`Win Rate: ${Number(playerStats.winRate.toFixed(4))}`}</div>
-        <div className='p-2'>{`Max Profit: ${Number(playerStats.maxProfit.toFixed(2))}`}</div>
-        <div className='p-2'>{`Max Loss: ${Number(playerStats.maxLoss.toFixed(2))}`}</div>
-        <div className='p-2'>{`Longest Win Streak: ${playerStats.longestWinStreak}`}</div>
-        <div className='p-2'>{`Longest Lose Streak: ${playerStats.longestLoseStreak}`}</div>
-        <div className='p-2'>{`Current Win Streak: ${playerStats.currentWinStreak}`}</div>
-        <div className='p-2'>{`Current Lose Streak: ${playerStats.currentLoseStreak}`}</div>
+        <div className='flex flex-row'>
+          <div className='w-100'>
+            <div className='p-2'>{`your name is ${playerName}`}</div>
+            <div className='p-2'>{`your email is ${playerEmail}`}</div>
+            <div className='p-2'>{`your player id is ${playerId}`}</div>
+            <div className='p-2'>{`Total Profit: ${Number(playerStats.totalProfit.toFixed(2))}`}</div>
+            <div className='p-2'>{`Average Profit: ${Number(playerStats.avgProfit.toFixed(2))}`}</div>
+            <div className='p-2'>{`Number of Sessions: ${Number(playerStats.numSessions.toFixed(2))}`}</div>
+            <div className='p-2'>{`Standard Deviation: ${Number(playerStats.stdDev.toFixed(4))}`}</div>
+            <div className='p-2'>{`Win Rate: ${Number(playerStats.winRate.toFixed(4))}`}</div>
+            <div className='p-2'>{`Max Profit: ${Number(playerStats.maxProfit.toFixed(2))}`}</div>
+            <div className='p-2'>{`Max Loss: ${Number(playerStats.maxLoss.toFixed(2))}`}</div>
+            <div className='p-2'>{`Longest Win Streak: ${playerStats.longestWinStreak}`}</div>
+            <div className='p-2'>{`Longest Lose Streak: ${playerStats.longestLoseStreak}`}</div>
+            <div className='p-2'>{`Current Win Streak: ${playerStats.currentWinStreak}`}</div>
+            <div className='p-2'>{`Current Lose Streak: ${playerStats.currentLoseStreak}`}</div>
+            <button 
+                className="mt-4 px-4 py-2 bg-gray-700 text-white rounded hover:bg-blue-500 transition-colors"
+                onClick={() => setEmailModalOpen(true)}
+              >
+                Change Email
+            </button>
+          </div>
 
-        <button 
-            className="mt-4 px-4 py-2 bg-gray-700 text-white rounded hover:bg-blue-500 transition-colors"
-            onClick={() => setEmailModalOpen(true)}
-          >
-            Change Email
-          </button>
+          <div className='p-3 w-100'>
+            <div>most recent session</div>
+            <div>biggest win session</div>
+            <div>biggest loss session</div>
+          </div>
+
+          <div className='p-3 w-100'>
+            graphs (cumulative profit, calendar with sessions)
+          </div>
+        </div>
 
 
         {emailModalOpen && (

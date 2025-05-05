@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { turso } from '@/lib/turso';
 
+// adds logs to the data base
 export async function POST(req: Request) {
   try {
     const { adminid, description } = await req.json();

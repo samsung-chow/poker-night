@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import { turso } from '@/lib/turso';
 
+// check if admin and password exist in admin table
 export async function POST(req: Request) {
   const { adminid, password } = await req.json()
   // console.log("Adminid:", adminid);

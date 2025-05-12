@@ -1,7 +1,8 @@
 'use client';
-import {useState, useEffect, useCallback, FC} from 'react';
+import {useState, useEffect, useCallback,} from 'react';
 import { calculateStatsFromSessions } from '../../lib/players';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { Session } from '@/lib/players';
 
 export default function Home() {
     const [emailModalOpen, setEmailModalOpen] = useState(true);
@@ -103,7 +104,14 @@ export default function Home() {
             const updateMostRecentSession = {...mostRecentSession};
             updateMostRecentSession.date = data2.sessions[0].date;
             updateMostRecentSession.buyIn = data2.sessions[0].buyin;
-            updateMostRecentSession.players = data2.sessions.map((session: any) => ({
+            updateMostRecentSession.players = data2.sessions.map((session: {
+              sid: number;
+              playerid: number;
+              profitloss: number;
+              name: string;
+              date: string;
+              buyin: number;
+            }) => ({
                 name: session.name,
                 profitLoss: session.profitloss,
             }));
@@ -120,7 +128,14 @@ export default function Home() {
             const updateBiggestWinSession = {...biggestWinSession};
             updateBiggestWinSession.date = data3.sessions[0].date;
             updateBiggestWinSession.buyIn = data3.sessions[0].buyin;
-            updateBiggestWinSession.players = data3.sessions.map((session: any) => ({
+            updateBiggestWinSession.players = data3.sessions.map((session: {
+              sid: number;
+              playerid: number;
+              profitloss: number;
+              name: string;
+              date: string;
+              buyin: number;
+            }) => ({
                 name: session.name,
                 profitLoss: session.profitloss,
             }));
@@ -138,7 +153,14 @@ export default function Home() {
             const updateBiggestLossSession = {...biggestLossSession};
             updateBiggestLossSession.date = data4.sessions[0].date;
             updateBiggestLossSession.buyIn = data4.sessions[0].buyin;
-            updateBiggestLossSession.players = data4.sessions.map((session: any) => ({
+            updateBiggestLossSession.players = data4.sessions.map((session: {
+              sid: number;
+              playerid: number;
+              profitloss: number;
+              name: string;
+              date: string;
+              buyin: number;
+            }) => ({
                 name: session.name,
                 profitLoss: session.profitloss,
             }));
@@ -149,7 +171,7 @@ export default function Home() {
             alert("Error: " + data4.error);
         }
 
-    }, [inputEmail])
+    }, [inputEmail, mostRecentSession, biggestWinSession, biggestLossSession]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -308,7 +330,7 @@ export default function Home() {
                 {/* actual change bar */}
                 <Bar dataKey="profitloss" stackId="a">
                   {
-                    playerCumulatives.slice(-50).map((entry, index) => (
+                    playerCumulatives.slice(-cumulativeGraph).map((entry, index) => (
                       <Cell 
                         key={`cell-${index}`} 
                         fill={entry.profitloss >= 0 ? '#4CAF50' : '#F44336'} // Green for profit, Red for loss

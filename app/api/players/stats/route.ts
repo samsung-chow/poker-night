@@ -11,7 +11,11 @@ export async function POST(req: NextRequest) {
     }
 
     const result = await turso.execute({
-      sql: 'SELECT * FROM Sessions WHERE playerid = ?',
+      sql: `
+      SELECT s.sid, s.playerid, s.gameid, s.profitloss, g.date 
+      FROM Sessions s JOIN Games g ON s.gameid = g.gameid WHERE playerid = ?
+      ORDER BY g.date ASC
+      `,
       args: [playerId],
     });
 
@@ -20,6 +24,7 @@ export async function POST(req: NextRequest) {
       playerid: row.playerid as number,
       gameid: row.gameid as number,
       profitloss: row.profitloss as number,
+      date: row.date as string,
     }));
 
     return NextResponse.json({ sessions, success: true });

@@ -25,7 +25,7 @@ export async function GET(req: Request) {
           SELECT g.gameid
           FROM games g JOIN sessions s on g.gameid = s.gameid
           WHERE s.playerid = ?
-          ORDER BY g.date DESC
+          ORDER BY s.profitloss ASC
           LIMIT 1)`,
       args: [pid],
     });

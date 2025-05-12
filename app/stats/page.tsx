@@ -2,7 +2,6 @@
 import {useState, useEffect, useCallback,} from 'react';
 import { calculateStatsFromSessions } from '../../lib/players';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { Session } from '@/lib/players';
 
 export default function Home() {
     const [emailModalOpen, setEmailModalOpen] = useState(true);

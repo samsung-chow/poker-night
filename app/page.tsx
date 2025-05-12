@@ -385,7 +385,7 @@ export default function Home() {
             <input
               type="string"
               className="border w-full px-3 py-2 rounded mb-4"
-              placeholder="Email"
+              placeholder="Email or 'guest'"
               onChange={(e) => setInputEmail(e.target.value)}
               autoCorrect='off'
               autoCapitalize='none'
